@@ -1,3 +1,5 @@
 *.wasm
 00-wasm-hello/hello.js
 00-wasm-hello/hello.html
+01-wasm-modularize/hello.js
+

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>modularize</title>
+  </head>
+  <body>
+    <script src="hello.js"></script>
+    <script>
+
+fetch('hello.wasm')
+  .then(response => response.arrayBuffer())
+  .then(buffer => new Uint8Array(buffer))
+  .then(binary => {
+    var moduleArgs = {
+      wasmBinary: binary,
+      onRuntimeInitialized: function () {
+        console.log('on runtime initialized');
+      }
+    };
+    var module = Module(moduleArgs);
+  });
+
+    </script>
+  </body>
+</html>
+
