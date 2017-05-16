@@ -2,4 +2,6 @@
 00-wasm-hello/hello.js
 00-wasm-hello/hello.html
 01-wasm-modularize/hello.js
+02-wasm-exported-functions/add.js
+02-wasm-exported-functions/add.wasm
 
