@@ -4,4 +4,6 @@
 01-wasm-modularize/hello.js
 02-wasm-exported-functions/add.js
 02-wasm-exported-functions/add.wasm
+03-wasm-callback/fibonacci.js
+03-wasm-callback/fibonacci.wasm
 

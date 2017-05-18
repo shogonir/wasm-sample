@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>callback</title>
+  </head>
+  <body>
+    <script src="fibonacci.js"></script>
+    <script>
+
+var module;
+
+fetch('fibonacci.wasm')
+  .then(response => response.arrayBuffer())
+  .then(buffer => new Uint8Array(buffer))
+  .then(binary => {
+    var moduleArgs = {
+      wasmBinary: binary,
+      onRuntimeInitialized: function () {
+        var fibonacciSeries = module.cwrap('fibonacciSeries', null, ['number']);
+        fibonacciSeries(10);
+      }
+    };
+    module = Module(moduleArgs);
+  });
+
+    </script>
+  </body>
+</html>
+
