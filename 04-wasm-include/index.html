@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>include</title>
+  </head>
+  <body>
+    <script src="include.js"></script>
+    <script>
+
+var module;
+
+fetch('include.wasm')
+  .then(response => response.arrayBuffer())
+  .then(buffer => new Uint8Array(buffer))
+  .then(binary => {
+    var moduleArgs = {
+      wasmBinary: binary,
+      onRuntimeInitialized: function () {
+        var add = module.cwrap('add', 'number', ['number', 'number']);
+        console.log(add(2, 3));
+      }
+    };
+    module = Module(moduleArgs);
+  });
+
+    </script>
+  </body>
+</html>
+
