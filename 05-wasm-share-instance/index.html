@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>share instance</title>
+  </head>
+  <body>
+    <script src="share.js"></script>
+    <script>
+
+var module;
+
+function pointerToPoint(pointer) {
+  const POINT_OFFSET_X = pointer / 4;
+  const POINT_OFFSET_Y = pointer / 4 + 1;
+  const POINT_OFFSET_ID = pointer / 2 + 4;
+  var point = {};
+  point.x = module.HEAPF32[POINT_OFFSET_X];
+  point.y = module.HEAPF32[POINT_OFFSET_Y];
+  point.id = module.HEAP16[POINT_OFFSET_ID];
+  return point;
+}
+
+fetch('share.wasm')
+  .then(response => response.arrayBuffer())
+  .then(buffer => new Uint8Array(buffer))
+  .then(binary => {
+    var moduleArgs = {
+      wasmBinary: binary,
+      onRuntimeInitialized: function () {
+        var angleToPoint = module.cwrap('angleToPoint', 'number', ['number', 'number']);
+        var freePoint = module.cwrap('freePoint', null, ['number']);
+        var pointer = angleToPoint(30);
+        var point = pointerToPoint(pointer);
+        console.log(point);
+        freePoint(pointer);
+      }
+    };
+    module = Module(moduleArgs);
+  });
+
+    </script>
+  </body>
+</html>
+

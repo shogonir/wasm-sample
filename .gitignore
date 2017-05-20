@@ -8,4 +8,6 @@
 03-wasm-callback/fibonacci.wasm
 04-wasm-include/include.js
 04-wasm-include/include.wasm
+05-wasm-share-instance/share.js
+05-wasm-share-instance/share.wasm
 
