@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>wasm babel webpack</title>
+  </head>
+  <body>
+
+    <script src="../dist/bundle.js"></script>
+
+    <script>
+
+sample.WasmUtils.initialize();
+
+console.log('0: 2 + 3 = ' + sample.WasmUtils.add(2, 3));
+
+setTimeout(function () {
+  console.log('1: 2 + 3 = ' + sample.WasmUtils.add(2, 3));
+}, 1000);
+
+    </script>
+
+  </body>
+</html>
+

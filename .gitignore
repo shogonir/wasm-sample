@@ -10,4 +10,8 @@
 04-wasm-include/include.wasm
 05-wasm-share-instance/share.js
 05-wasm-share-instance/share.wasm
+06-wasm-babel-webpack/dist/
+06-wasm-babel-webpack/node_modules/
+06-wasm-babel-webpack/wasm/add.js
+06-wasm-babel-webpack/wasm/add.wasm
 
