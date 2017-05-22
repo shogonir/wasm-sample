@@ -1,4 +1,4 @@
-#include "adder.cpp"
+#include "adder.h"
 
 extern "C" {
     
