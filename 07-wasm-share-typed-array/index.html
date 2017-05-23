@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>share typed array</title>
+  </head>
+  <body>
+    <script src="sum.js"></script>
+    <script>
+
+var module;
+var functions = {};
+
+function readFunctions() {
+  functions.IntSum = module.cwrap('IntSum', 'number', ['number', 'number']);
+  functions.DoubleSum = module.cwrap('DoubleSum', 'number', ['number', 'number']);
+}
+
+function doubleSum(float64Array) {
+  var pointer = module._malloc(float64Array.length * 8); // 64bits=8bytes
+  var offset = pointer / 8;
+  module.HEAPF64.set(float64Array, offset);
+  var result = functions.DoubleSum(pointer, float64Array.length);
+  module._free(pointer);
+  return result;
+}
+
+function intSum(int32Array) {
+  var pointer = module._malloc(int32Array.ength * 4); // 32bits=4bytes
+  var offset = pointer / 4;
+  module.HEAP32.set(int32Array, offset);
+  var result = functions.IntSum(pointer, int32Array.length);
+  module._free(pointer);
+  return result;
+}
+
+fetch('sum.wasm')
+  .then(response => response.arrayBuffer())
+  .then(buffer => new Uint8Array(buffer))
+  .then(binary => {
+    var moduleArgs = {
+      wasmBinary: binary,
+      onRuntimeInitialized: function () {
+        readFunctions();
+        console.log(doubleSum(new Float64Array([0.1, 0.2, 0.3])));
+        console.log(intSum(new Int32Array([1, 2, 3])));
+      }
+    };
+    module = Module(moduleArgs);
+  });
+
+    </script>
+  </body>
+</html>
+

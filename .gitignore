@@ -14,4 +14,6 @@
 06-wasm-babel-webpack/node_modules/
 06-wasm-babel-webpack/wasm/add.js
 06-wasm-babel-webpack/wasm/add.wasm
+07-wasm-share-typed-array/sum.js
+07-wasm-share-typed-array/sum.wasm
 
