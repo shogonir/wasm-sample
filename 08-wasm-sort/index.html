@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>sort benchmark</title>
+  </head>
+  <body>
+    <script src="sort.js"></script>
+    <script>
+
+var module;
+var functions = {};
+
+function readFunctions() {
+  functions.InsertSort = module.cwrap('InsertSort', null, ['number', 'number']);
+}
+
+function insertSortJS(int32Array) {
+  var j, swap;
+  for (var i=0; i<int32Array.length; i++) {
+    j = i - 1;
+    while(j >= 0 && int32Array[j] > int32Array[j+1]) {
+      swap = int32Array[j];
+      int32Array[j] = int32Array[j+1];
+      int32Array[j+1] = swap;
+      j--;
+    }
+  }
+  console.log(int32Array);
+}
+
+function insertSortWasm(int32Array) {
+  var pointer = module._malloc(int32Array.length * 4); // 32bit=4bytes
+  var offset = pointer / 4;
+  module.HEAP32.set(int32Array, offset);
+  functions.InsertSort(pointer, int32Array.length);
+  console.log(module.HEAP32.subarray(offset, offset + int32Array.length));
+  module._free(pointer);
+}
+
+function randomArray(size) {
+  var int32Array = new Int32Array(size);
+  var i;
+  for (i=0; i<size; i++) {
+    int32Array[i] = i;
+  }
+  for (i=0; i<size; i++) {
+    var rand1 = Math.floor(Math.random() * (size+1));
+    var rand2 = Math.floor(Math.random() * (size+1));
+    var swap = int32Array[rand1];
+    int32Array[rand1] = int32Array[rand2];
+    int32Array[rand2] = swap;
+  }
+  return int32Array;
+}
+
+function benchmark(size) {
+  var randArray1 = randomArray(size);
+  var randArray2 = new Int32Array(randArray1);
+
+  console.time('js');
+  insertSortJS(randArray1);
+  console.timeEnd('js');
+
+  console.time('wasm');
+  insertSortWasm(randArray2);
+  console.timeEnd('wasm');
+}
+
+fetch('sort.wasm')
+  .then(response => response.arrayBuffer())
+  .then(buffer => new Uint8Array(buffer))
+  .then(binary => {
+    var moduleArgs = {
+      wasmBinary: binary,
+      onRuntimeInitialized: function () {
+        readFunctions();
+        benchmark(10 * 1000);
+      }
+    };
+    module = Module(moduleArgs);
+  });
+
+    </script>
+  </body>
+</html>
+

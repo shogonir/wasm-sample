@@ -16,4 +16,6 @@
 06-wasm-babel-webpack/wasm/add.wasm
 07-wasm-share-typed-array/sum.js
 07-wasm-share-typed-array/sum.wasm
+08-wasm-sort/sort.js
+08-wasm-sort/sort.wasm
 
