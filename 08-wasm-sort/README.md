@@ -1,3 +1,3 @@
-# 04-wasm-sort
+# 08-wasm-sort
 * Benchmark sort speed JavaScript and WebAssembly.
 
