@@ -3,32 +3,54 @@ import Module from '../wasm/add';
 export default class WasmUtils {
   
   static initialize() {
-    this.isInitialized = false;
-    fetch('../wasm/add.wasm')
-      .then(response => response.arrayBuffer())
-      .then(buffer => new Uint8Array(buffer))
-      .then(binary => {
-        let moduleArgs = {
-          wasmBinary: binary,
-          onRuntimeInitialized: function() {
-            WasmUtils.readFunctions();
+    WasmUtils.isInitialized = false;
+
+    return new Promise((resolve, reject) => {
+      let timeout = setTimeout(() => {
+        clearTimeout(timeout);
+        reject();
+      }, 1200);
+
+      fetch('../wasm/add.wasmn')
+        .then(response => {
+          if (!response.ok) {
+            throw Error(response.statusText);
           }
-        };
-        this.module = Module(moduleArgs);
-      });
+          return response.arrayBuffer();
+        })
+        .then(buffer => new Uint8Array(buffer))
+        .then(binary => {
+          let moduleArgs = {
+            wasmBinary: binary,
+            onRuntimeInitialized: () => {
+              WasmUtils.readFunctions();
+              WasmUtils.isInitialized = true;
+              clearTimeout(timeout);
+              resolve();
+            }
+          };
+          WasmUtils.module = Module(moduleArgs);
+        })
+        .catch(() => {
+          clearTimeout(timeout);
+          reject();
+        });
+    });
   }
 
   static readFunctions() {
-    this.functions = {};
-    this.functions.add = this.module.cwrap('add', 'number', ['number', 'number']);
-    this.isInitialized = true;
+    if (!WasmUtils.isInitialized) {
+      return null;
+    }
+    WasmUtils.functions = {};
+    WasmUtils.functions.add = WasmUtils.module.cwrap('add', 'number', ['number', 'number']);
   }
 
   static add(a, b) {
-    if (!(this.isInitialized && this.functions && this.functions.add)) {
+    if (!(WasmUtils.isInitialized && WasmUtils.functions && WasmUtils.functions.add)) {
       return null;
     }
-    return this.functions.add(a, b);
+    return WasmUtils.functions.add(a, b);
   }
 }
 
